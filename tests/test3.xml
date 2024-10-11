@@ -1,0 +1,28 @@
+
+<query>
+   <select>
+      <column>"class"</column>
+   </select>
+   <from>
+      <table>"characters"</table>
+   </from>
+   <where>
+            <eq_op>
+                <lhs>
+                <ref_col>"origin"</ref_col>
+                </lhs>
+                <rhs>
+                <string_constant>"'USA'"</string_constant>
+                </rhs>
+            </eq_op>
+            <or
+            <eq_op>
+                <lhs>
+                <ref_col>"origin"</ref_col>
+                </lhs>
+                <rhs>
+                <string_constant>"'Japan'"</string_constant>
+                </rhs>
+            </eq_op>
+   </where>
+</query>

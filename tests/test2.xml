@@ -1,0 +1,9 @@
+
+<query>
+   <select>
+      <column>"class"</column>
+   </select>
+   <from>
+      <tab>"characters"</tab>
+   </from>
+</query>
