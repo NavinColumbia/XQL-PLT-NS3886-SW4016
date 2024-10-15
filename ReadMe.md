@@ -1,4 +1,4 @@
-# NS3886 - COMS W4115
+# COMS W4115
 
 ## Lexical Grammar
 
