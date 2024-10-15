@@ -234,6 +234,7 @@ Error in file ./tests/test5.xml: Error at line 4, column 15: Unexpected characte
 ## TEAM
 
 - Navinashok Swaminathan (UNI : NS3886 )
+- Shihao Wang (UNI : sw4016)
 
 
 
