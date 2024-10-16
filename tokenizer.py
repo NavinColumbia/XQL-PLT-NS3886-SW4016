@@ -110,7 +110,7 @@ class Scanner:
                 self.advance()
                 """check comment"""
                 if (self.is_comment(tag_name)):
-                    self.add_tag_token(tag_name[2:len(tag_name)-2], is_comment=True)
+                    self.add_tag_token(tag_name[3:len(tag_name)-2], is_comment=True)
                 else:
                     self.add_tag_token(tag_name, is_closing=is_closing)
             else:
