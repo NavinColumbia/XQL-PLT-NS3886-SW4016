@@ -69,6 +69,11 @@ We have the following Class of tokens :
 - This includes numbers like 123,0 etc
 - Corresponding Token Returned `INTEGER_LITERAL`
 
+6)Comments :
+- Regex : `<!--[a-zA-Z0-9]*-->`
+- This includes any string or number enclosed by `<!--` and `-->`
+- Corresponding Token Returned `COMMENT`
+
 ## TESTS
 
 - The .xml files to be tested can be found under ./tests directory 
@@ -204,6 +209,24 @@ Error in file ./tests/test4.xml: Error at line 4, column 15: Unclosed string lit
 - test5.xml forgets to enclose `*` within quotes, it should be `"*"`
 ```
 Error in file ./tests/test5.xml: Error at line 4, column 15: Unexpected character: *
+```
+- test6.xml doesn't have any errors, Expected Output:
+```
+Successfully processed ./tests/test6.xml
+Tokens:
+<QUERY_OPEN, <query>>
+<SELECT_OPEN, <select>>
+<COLUMN_OPEN, <column>>
+<STRING_LITERAL, *>
+<COLUMN_CLOSE, </column>>
+<SELECT_CLOSE, </select>>
+<FROM_OPEN, <from>>
+<TABLE_OPEN, <table>>
+<STRING_LITERAL, table>
+<TABLE_CLOSE, </table>>
+<FROM_CLOSE, </from>>
+<QUERY_CLOSE, </query>>
+<COMMENT, adasd>
 ```
 
 ## Execution 
