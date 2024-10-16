@@ -1,0 +1,9 @@
+<query>
+<select>
+<column>"*"</column>
+</select>
+<from>
+<table>"table"</table>
+</from>
+</query>
+<!--adasd-->

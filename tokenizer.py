@@ -31,6 +31,8 @@ class TokenType(enum.Enum):
     
     STRING_LITERAL, INT_LITERAL = 51, 52
 
+    COMMENT = 53
+
 class Token:
     def __init__(self, type, value):
         self.type = type
@@ -47,6 +49,8 @@ class Scanner:
         self.column = 1
         self.tokens = []
         self.self_closing_tags = {"and", "or"}
+        self.comment_start = "!--"
+        self.comment_end = "--"
     
     def advance(self):
         if self.position < len(self.input):
@@ -104,13 +108,17 @@ class Scanner:
                     self.error(f"Invalid self-closing tag", start_line, start_column)
             elif self.input[self.position] == '>':
                 self.advance()
-                self.add_tag_token(tag_name, is_closing=is_closing)
+                """check comment"""
+                if (self.is_comment(tag_name)):
+                    self.add_tag_token(tag_name[2:len(tag_name)-2], is_comment=True)
+                else:
+                    self.add_tag_token(tag_name, is_closing=is_closing)
             else:
                 self.error(f"Invalid tag", start_line, start_column)
         else:
             self.error("Unclosed tag", start_line, start_column)
 
-    def add_tag_token(self, tag_name, is_closing=False, is_self_closing=False):
+    def add_tag_token(self, tag_name, is_closing=False, is_self_closing=False, is_comment=False):
         tag_type_map = {
             "query": (TokenType.QUERY_OPEN, TokenType.QUERY_CLOSE),
             "select": (TokenType.SELECT_OPEN, TokenType.SELECT_CLOSE),
@@ -147,12 +155,17 @@ class Scanner:
                 self.tokens.append(Token(tag_type_map[tag_name][0], f"<{tag_name}/>"))
             else:
                 self.error(f"Unknown self-closing tag: <{tag_name}/>")
+        elif is_comment:
+            self.tokens.append(Token(TokenType.COMMENT, f"{tag_name}"))
         else:
             if tag_name in tag_type_map:
                 token_type = tag_type_map[tag_name][1 if is_closing else 0]
                 self.tokens.append(Token(token_type, f"<{'/' if is_closing else ''}{tag_name}>"))
             else:
                 self.error(f"Unknown tag: <{'/' if is_closing else ''}{tag_name}>")
+        
+    def is_comment(self, tag_name):
+        return tag_name[0:3] == self.comment_start and tag_name[len(tag_name)-2:len(tag_name)] == self.comment_end
 
 
 
@@ -194,6 +207,7 @@ class Scanner:
         return False
     """
     
+    # def comment(self, )
  
     def error(self, message, line=None, column=None):
         if line is None:
