@@ -18,7 +18,8 @@ RUN chmod +x run.sh
 RUN useradd -m myuser
 USER myuser
 
-
+VOLUME [ "/app/lexer_output" ]
+VOLUME [ "/app/parser_output" ]
 
 
 ENTRYPOINT ["./run.sh"]

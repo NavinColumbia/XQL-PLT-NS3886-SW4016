@@ -216,36 +216,68 @@ class Scanner:
             column = self.column
         raise ValueError(f"Error at line {line}, column {column}: {message}")
 
-def process_file(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            input_text = file.read()
-        
-        scanner = Scanner(input_text)
-        tokens = scanner.scan()
-        print("\n\n\n\n")
-        
-        print(f"Successfully processed {file_path}")
-        print("Tokens:")
-        for token in tokens:
-            print(token)
-        print("\n\n\n\n")
-    except ValueError as e:
-        print("\n\n\n\n")
-        print(f"Error in file {file_path}: {str(e)}")
-        print("\n\n\n\n")
-    except Exception as e:
-        print("\n\n\n\n\n")
-        print(f"Unexpected error in file {file_path}: {str(e)}")
-        print("\n\n\n\n")
+def process_file(file_path: str):
+    tokenLs=[]
+    with open(file_path, 'r') as file:
+        input_text = file.read()
+    
+    scanner = Scanner(input_text)
+    tokens = scanner.scan()
+
+    for token in tokens:
+        tokenLs.append(token)
+
+    return tokenLs
 
 
-def process_folder(folder_path):
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".xml") or filename.endswith(".txt"):  
-            file_path = os.path.join(folder_path, filename)
-            process_file(file_path)
+def write_tokens_to_file(list, file):
+    for t in list:
+        file.write(f"{t}\n")
+
+
+def process_folder(input_dir: str = "./tests", output_dir: str = "./lexer_output"):
+    if not os.path.exists(input_dir):
+        print(f"Error: Input directory {input_dir} does not exist")
+        return
+        
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+    
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".xml"):
+            input_path = os.path.join(input_dir, filename)
+            name = filename.split(".")[0]
+            output_path = os.path.join(output_dir, f"lex_{name}.txt")
+            
+            print(f"\nProcessing {filename}:")
+            try:
+                tokens = process_file(input_path)
+                print(f"Successfully processed {input_path}")
+
+                # Write AST to output file
+                with open(output_path, 'w') as f:
+                    # f.write("Successfully tokenized.\n")
+                    write_tokens_to_file(tokens, f)
+                    
+            except Exception as e:
+                print(f"Error tokenizing {filename}: {str(e)}")
+                # Write error to output file
+                with open(output_path, 'w') as f:
+                    f.write(f"Error tokenizing file: {str(e)}\n")
 
 if __name__ == "__main__":
-    folder_path = "./tests/"  
-    process_folder(folder_path)
+    # folder_path = "./tests/"  
+    # process_folder(folder_path)
+
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Tokenizing XML SQL')
+    parser.add_argument('--input', default='./tests', 
+                      help='Input directory containing XML files (default: ./tests)')
+    parser.add_argument('--output', default='./lexer_output',
+                      help='Output directory for tokenizer results (default: ./lexer_output)')
+    
+    args = parser.parse_args()
+    process_folder(args.input, args.output)
+    
+    print("\nTokenizing complete. Check the output directory for results.")
