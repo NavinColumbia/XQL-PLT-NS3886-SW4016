@@ -193,6 +193,60 @@ Tokens:
 <ORDER_BY_CLOSE, </order_by>>
 <QUERY_CLOSE, </query>>
 ```
+
+Parser output for test1.xml:
+```
+Successfully parsed. AST structure:
+Query:
+  Select:
+    Column: class
+    Column:
+      Function: count
+        Parameters:
+          Column: *
+    Column:
+      Alias:
+        Expression:
+          Function: max
+            Parameters:
+              Column: stats
+        As: max_stats
+  From:
+    Table: characters
+    Table: games
+  Where:
+    Logical and:
+      Left:
+        Comparison (eq):
+          Left:
+            Reference: games.game
+          Right: 'genshin'
+      Right:
+        Bracketed Expression:
+          Logical or:
+            Left:
+              Comparison (eq):
+                Left:
+                  Reference: games.origin
+                Right: 'USA'
+            Right:
+              Comparison (eq):
+                Left:
+                  Reference: games.origin
+                Right: 'Japan'
+  Group By:
+    Column: class
+  Having:
+    Comparison (gt):
+      Left:
+        Function: count
+          Parameters:
+            Column: *
+      Right: 3
+  Order By:
+    Column: class
+    Direction: asc
+```
 - test2.xml uses `<tab>` `</tab>` but no such tag exists , we only have `<table>` and `</table>`
 ```
 Error in file ./tests/test2.xml: Error at line 7, column 12: Unknown tag: <tab>
