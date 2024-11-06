@@ -193,6 +193,44 @@ Tokens:
 <ORDER_BY_CLOSE, </order_by>>
 <QUERY_CLOSE, </query>>
 ```
+- test2.xml uses `<tab>` `</tab>` but no such tag exists , we only have `<table>` and `</table>`
+```
+Error in file ./tests/test2.xml: Error at line 7, column 12: Unknown tag: <tab>
+```
+- test3.xml has or tag that is not properly closed : `<or` instead of `<or\>`
+```
+Error in file ./tests/test3.xml: Error at line 18, column 13: Invalid tag
+```
+- test4.xml has a string that is not properly closed `"1` instead of `"1"` 
+Expected output :
+```
+Error in file ./tests/test4.xml: Error at line 4, column 15: Unclosed string literal
+```
+- test5.xml forgets to enclose `*` within quotes, it should be `"*"`
+```
+Error in file ./tests/test5.xml: Error at line 4, column 15: Unexpected character: *
+```
+- test6.xml doesn't have any errors, Expected Output:
+```
+Successfully processed ./tests/test6.xml
+Tokens:
+<QUERY_OPEN, <query>>
+<SELECT_OPEN, <select>>
+<COLUMN_OPEN, <column>>
+<STRING_LITERAL, *>
+<COLUMN_CLOSE, </column>>
+<SELECT_CLOSE, </select>>
+<FROM_OPEN, <from>>
+<TABLE_OPEN, <table>>
+<STRING_LITERAL, table>
+<TABLE_CLOSE, </table>>
+<FROM_CLOSE, </from>>
+<QUERY_CLOSE, </query>>
+<COMMENT, adasd>
+```
+
+## Parser
+The parser reads the output file of the tokenizer and match each token to a data class defined in the parser, then link them up to form an AST for parsing. It will check the corresponding errors (i.e. unclosed clauses, missing arguments) for each token.
 
 Parser output for test1.xml:
 ```
@@ -247,41 +285,6 @@ Query:
     Column: class
     Direction: asc
 ```
-- test2.xml uses `<tab>` `</tab>` but no such tag exists , we only have `<table>` and `</table>`
-```
-Error in file ./tests/test2.xml: Error at line 7, column 12: Unknown tag: <tab>
-```
-- test3.xml has or tag that is not properly closed : `<or` instead of `<or\>`
-```
-Error in file ./tests/test3.xml: Error at line 18, column 13: Invalid tag
-```
-- test4.xml has a string that is not properly closed `"1` instead of `"1"` 
-Expected output :
-```
-Error in file ./tests/test4.xml: Error at line 4, column 15: Unclosed string literal
-```
-- test5.xml forgets to enclose `*` within quotes, it should be `"*"`
-```
-Error in file ./tests/test5.xml: Error at line 4, column 15: Unexpected character: *
-```
-- test6.xml doesn't have any errors, Expected Output:
-```
-Successfully processed ./tests/test6.xml
-Tokens:
-<QUERY_OPEN, <query>>
-<SELECT_OPEN, <select>>
-<COLUMN_OPEN, <column>>
-<STRING_LITERAL, *>
-<COLUMN_CLOSE, </column>>
-<SELECT_CLOSE, </select>>
-<FROM_OPEN, <from>>
-<TABLE_OPEN, <table>>
-<STRING_LITERAL, table>
-<TABLE_CLOSE, </table>>
-<FROM_CLOSE, </from>>
-<QUERY_CLOSE, </query>>
-<COMMENT, adasd>
-```
 
 ## Execution 
 
@@ -290,7 +293,7 @@ Tokens:
     ```
     python tokenizer.py
     ```
-- You can alterntively run the Shell script. First make sure it is executable by changing permission :
+- You can alternatively run the Shell script. First make sure it is executable by changing permission :
    ```
    chmod +x run.sh
    ```

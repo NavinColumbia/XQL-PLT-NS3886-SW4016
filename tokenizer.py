@@ -261,9 +261,6 @@ def process_folder(input_dir: str = "./tests", output_dir: str = "./lexer_output
                     
             except Exception as e:
                 print(f"Error tokenizing {filename}: {str(e)}")
-                # Write error to output file
-                with open(output_path, 'w') as f:
-                    f.write(f"Error tokenizing file: {str(e)}\n")
 
 if __name__ == "__main__":
     # folder_path = "./tests/"  
