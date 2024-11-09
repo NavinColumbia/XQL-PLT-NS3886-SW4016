@@ -232,6 +232,34 @@ Tokens:
 ## Parser
 The parser reads the output file of the tokenizer and match each token to a data class defined in the parser, then link them up to form an AST for parsing. It will check the corresponding errors (i.e. unclosed clauses, missing arguments) for each token.
 
+Context Free Grammar for all the tokens:
+- Select → SELECT_OPEN ColumnList SELECT_CLOSE
+- ColumnList → Column | Column ColumnList
+- Column → COLUMN_OPEN Column_Inner  COLUMN_CLOSE
+- Column_Inner → STRING_LITERAL | Function | Alias
+- From → FROM_OPEN TableList FROM_CLOSE
+- TableList → Table | Table TableList
+- Table → TABLE_OPEN STRING_LITERAL TABLE_CLOSE
+- Query → QUERY_OPEN Select From Query_Inner QUERY_CLOSE
+- Query_Inner → Where | GroupBy | Having | OrderBy
+- Function → COUNT_FUNC_OPEN Func_Inner COUNT_FUNC_CLOSE | MAX_FUNC_OPEN Func_Inner MAX_FUNC_CLOSE
+- Function_Inner → STRING_LITERAL | COLUMN_OPEN STRING_LITERAL COLUMN_CLOSE
+- Alias → ALIAS_OPEN LHS_OPEN Alias_Inner LHS_CLOSE RHS_OPEN STRING_LITERAL RHS_CLOSE ALIAS_CLOSE
+- Alias_Inner → STRING_LITERAL | Function
+- Where → WHERE_OPEN condition WHERE_CLOSE
+- Condition → Bracket | Comparison Condition
+- Bracket → BRACKET_OPEN Condition BRACKET_CLOSE
+- Comparison → EQ_OP_OPEN Comparison_Inner EQ_OP_CLOSE | GT_OP_OPEN Comparison_Inner GT_OP_CLOSE
+- Comparison_Inner → LHS_OPEN Ref_or_Value LHS_CLOSE RHS_OPEN Constant RHS_CLOSE
+- Ref_or_Value → Table Ref_Column | STRING_LITERAL | Function
+- Ref_Column → REF_COL_OPEN STRING_LITERAL REF_COL_CLOSE
+- Constant → STRING_CONSTANT_OPEN STRING_LITERAL STRING_CONSTANT_CLOSE | INT_CONSTANT_OPEN INT_LITERAL INT_CONSTANT_CLOSE
+- Group_By → GROUP_BY_OPEN Column GROUP_BY_CLOSE
+- Having → HAVING_OPEN Condition HAVING_CLOSE
+- Order_By → ORDER_BY_OPEN Order_By_Inner ORDER_BY_CLOSE
+- Order_By_Inner → ASC_OPEN Ref_Column ASC_CLOSE | DESC_OPEN Ref_Column DESC_CLOSE
+
+
 Parser output for test1.xml:
 ```
 Successfully parsed. AST structure:
@@ -289,9 +317,13 @@ Query:
 ## Execution 
 
 - Git clone this repo 
-- If you have python on your system, you can cd to project directory and run the script : 
+- If you have python on your system, you can cd to project directory and first run the script : 
     ```
     python tokenizer.py
+    ```
+  Then run the script
+    ```
+    python parser.py
     ```
 - You can alternatively run the Shell script. First make sure it is executable by changing permission :
    ```
@@ -303,11 +335,11 @@ Query:
     ```
 - You can alternatively use docker if you have it installed. Run the below from the project directory to build the image.
     ``` 
-    docker build -t tokenizer . 
+    docker build -t parser . 
     ```
 - Next run the image
     ``` 
-    docker run tokenizer 
+    docker run parser 
     ```
 
 
