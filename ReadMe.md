@@ -241,20 +241,25 @@ Context Free Grammar for all the tokens:
 - TableList → Table | Table TableList
 - Table → TABLE_OPEN STRING_LITERAL TABLE_CLOSE
 - Query → QUERY_OPEN Select From Query_Inner QUERY_CLOSE
-- Query_Inner → Where | GroupBy | Having | OrderBy
+- Query_Inner → Where_opt GroupBy_opt Having_opt OrderBy_opt
+- Where_opt → Where | ε
+- GroupBy_opt → GroupBy_opt | ε
+- Having_opt → Having_opt | ε
+- OrderBy_opt → OrderBy_opt | ε
 - Function → COUNT_FUNC_OPEN Func_Inner COUNT_FUNC_CLOSE | MAX_FUNC_OPEN Func_Inner MAX_FUNC_CLOSE
 - Function_Inner → STRING_LITERAL | COLUMN_OPEN STRING_LITERAL COLUMN_CLOSE
 - Alias → ALIAS_OPEN LHS_OPEN Alias_Inner LHS_CLOSE RHS_OPEN STRING_LITERAL RHS_CLOSE ALIAS_CLOSE
 - Alias_Inner → STRING_LITERAL | Function
 - Where → WHERE_OPEN condition WHERE_CLOSE
-- Condition → Bracket | Comparison Condition
+- Condition → Bracket | Comparison Condition Condition_Inner
+- Condition_Inner → Condition | ε
 - Bracket → BRACKET_OPEN Condition BRACKET_CLOSE
 - Comparison → EQ_OP_OPEN Comparison_Inner EQ_OP_CLOSE | GT_OP_OPEN Comparison_Inner GT_OP_CLOSE
 - Comparison_Inner → LHS_OPEN Ref_or_Value LHS_CLOSE RHS_OPEN Constant RHS_CLOSE
 - Ref_or_Value → Table Ref_Column | STRING_LITERAL | Function
 - Ref_Column → REF_COL_OPEN STRING_LITERAL REF_COL_CLOSE
 - Constant → STRING_CONSTANT_OPEN STRING_LITERAL STRING_CONSTANT_CLOSE | INT_CONSTANT_OPEN INT_LITERAL INT_CONSTANT_CLOSE
-- Group_By → GROUP_BY_OPEN Column GROUP_BY_CLOSE
+- Group_By → GROUP_BY_OPEN ColumnList GROUP_BY_CLOSE
 - Having → HAVING_OPEN Condition HAVING_CLOSE
 - Order_By → ORDER_BY_OPEN Order_By_Inner ORDER_BY_CLOSE
 - Order_By_Inner → ASC_OPEN Ref_Column ASC_CLOSE | DESC_OPEN Ref_Column DESC_CLOSE
