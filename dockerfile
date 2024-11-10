@@ -12,10 +12,13 @@ COPY . /app
 COPY ./tests /app/tests
 
 
-RUN chmod +x run.sh
+RUN useradd -m myuser && \
+    chown -R myuser:myuser /app && \
+    chmod +x run.sh && \
+    chmod +w /app/lexer_output && \
+    chmod +w /app/parser_output
 
 
-RUN useradd -m myuser
 USER myuser
 
 VOLUME [ "/app/lexer_output" ]
