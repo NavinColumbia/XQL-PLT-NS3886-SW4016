@@ -1,0 +1,33 @@
+<query>
+    <select>
+        <column>
+            "names"
+        </column>
+        <column>
+            <alias>
+                <lhs>
+                    <count_func>"cars"</count_func>
+                </lhs>
+                <rhs>"num_of_cars""num_of_cars"</rhs>
+            </alias>
+        </column>
+    </select>
+    <from>
+        "tables"
+    </from>
+    <where>
+        <eq_op>
+            <lhs>
+                "items"
+            </lhs>
+            <rhs>
+                "names"
+            </rhs>
+        </eq_op>
+    </where>
+    <group_by>
+        <column>
+            "names"
+        </column>
+    </group_by>
+</query>

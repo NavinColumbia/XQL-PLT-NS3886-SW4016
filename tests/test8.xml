@@ -1,0 +1,18 @@
+<query>
+    <select>
+        <column>
+            <count_func>"*"</count_func>
+        </column>
+    </select>
+    <from>"tables"</from>
+    <where>
+        <eq_op>
+            <lhs>
+                "items"
+            </lhs>
+            <rhs>
+                "names"
+            </rhs>
+        </eq_op>
+    </where>
+</query>
