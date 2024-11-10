@@ -290,23 +290,17 @@ class Parser:
         return WhereNode(condition)
 
     def parse_condition(self) -> Union[ComparisonNode, LogicalNode, BracketNode]:
-        print(f"\nDebug: Parsing condition, current token: {self.peek()}")
         if self.peek().type == TokenType.BRACKET_OPEN:
-            print("Debug: Found bracket expression")
             return self.parse_bracket()
         elif self.peek().type in [TokenType.EQ_OP_OPEN, TokenType.GT_OP_OPEN]:
-            print("Debug: Found comparison")
             condition = self.parse_comparison()
-            print(f"Debug: After parsing comparison, next token: {self.peek()}")
             if self.peek().type in [TokenType.AND, TokenType.OR]:
                 op = "and" if self.peek().type == TokenType.AND else "or"
-                print(f"Debug: Found logical operator: {op}")
                 self.consume()
                 right = self.parse_condition()
                 return LogicalNode(op, condition, right)
             return condition
         else:
-            print(f"Debug: Unexpected token type in condition: {self.peek().type}")
             raise SyntaxError(f"Expected condition, got {self.peek().type}")
 
     def parse_comparison(self) -> ComparisonNode:
@@ -339,14 +333,11 @@ class Parser:
         return ComparisonNode(operator, left, right)
 
     def parse_ref_or_value(self) -> Union[str, TableColumnRef, FunctionNode]:
-        print(f"\nDebug: Parsing reference or value, current token: {self.peek()}")
         if self.peek().type == TokenType.REF_TABLE_OPEN:
-            print("Debug: Found table reference")
             self.consume()
             if self.peek().type != TokenType.STRING_LITERAL:
                 raise SyntaxError(f"Expected table name, got {self.peek().type}")
             table = self.consume().value
-            print(f"Debug: Table name: {table}")
             if not self.match(TokenType.REF_TABLE_CLOSE):
                 raise SyntaxError("Unclosed table reference")
                 
@@ -355,19 +346,16 @@ class Parser:
             if self.peek().type != TokenType.STRING_LITERAL:
                 raise SyntaxError("Expected column name")
             column = self.consume().value
-            print(f"Debug: Column name: {column}")
             if not self.match(TokenType.REF_COL_CLOSE):
                 raise SyntaxError("Unclosed column reference")
                 
             return TableColumnRef(table, column)
         elif self.peek().type == TokenType.STRING_LITERAL:
             value = self.consume().value
-            print(f"Debug: Found string literal: {value}")
             return value
         elif self.peek().type in [TokenType.COUNT_FUNC_OPEN, TokenType.MAX_FUNC_OPEN]:
             return self.parse_function()
         else:
-            print(f"Debug: Unexpected token type: {self.peek().type}")
             raise SyntaxError("Expected reference or value")
     def parse_constant(self) -> Union[str, int]:
         if self.peek().type == TokenType.STRING_CONSTANT_OPEN:
@@ -465,12 +453,9 @@ class Parser:
         return OrderByNode(column, direction)
 
     def match(self, type: TokenType) -> bool:
-        print(f"Debug: Matching {type}, current token: {self.peek().type}")
         if self.peek().type == type:
             self.consume()
-            print("Debug: Match successful")
             return True
-        print("Debug: Match failed")
         return False
         
     def peek(self) -> Token:
@@ -481,7 +466,6 @@ class Parser:
     def consume(self) -> Token:
         token = self.peek()
         self.current += 1
-        print(f"Debug: Consumed token: {token}, next token: {self.peek() if self.current < len(self.tokens) else 'END'}")
         return token
 
 def parse_tokens_file(file_path: str) -> QueryNode:
@@ -507,7 +491,6 @@ def parse_tokens_file(file_path: str) -> QueryNode:
                     
                     # Skip comments - don't add them to tokens
                     if type_str == 'COMMENT':
-                        print(f"Debug: Skipping comment: {value}")
                         continue
                         
                     if type_str in TokenType.__members__:
