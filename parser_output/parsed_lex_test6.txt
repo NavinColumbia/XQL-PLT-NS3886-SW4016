@@ -1,0 +1,6 @@
+Successfully parsed. AST structure:
+Query:
+  Select:
+    Column: *
+  From:
+    Table: table

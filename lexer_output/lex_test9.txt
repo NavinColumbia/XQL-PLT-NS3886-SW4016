@@ -1,0 +1,13 @@
+<QUERY_OPEN, <query>>
+<SELECT_OPEN, <select>>
+<COLUMN_OPEN, <column>>
+<COUNT_FUNC_OPEN, <count_func>>
+<COUNT_FUNC_CLOSE, </count_func>>
+<COLUMN_CLOSE, </column>>
+<SELECT_CLOSE, </select>>
+<FROM_OPEN, <from>>
+<TABLE_OPEN, <table>>
+<STRING_LITERAL, users>
+<TABLE_CLOSE, </table>>
+<FROM_CLOSE, </from>>
+<QUERY_CLOSE, </query>>

@@ -1,0 +1,13 @@
+<QUERY_OPEN, <query>>
+<SELECT_OPEN, <select>>
+<COLUMN_OPEN, <column>>
+<STRING_LITERAL, *>
+<COLUMN_CLOSE, </column>>
+<SELECT_CLOSE, </select>>
+<FROM_OPEN, <from>>
+<TABLE_OPEN, <table>>
+<STRING_LITERAL, table>
+<TABLE_CLOSE, </table>>
+<FROM_CLOSE, </from>>
+<QUERY_CLOSE, </query>>
+<COMMENT, adasd>

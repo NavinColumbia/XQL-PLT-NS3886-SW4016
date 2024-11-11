@@ -243,20 +243,22 @@ Context Free Grammar for all the tokens:
 - Query → QUERY_OPEN Select From Query_Inner QUERY_CLOSE
 - Query_Inner → Where_opt GroupBy_opt Having_opt OrderBy_opt
 - Where_opt → Where | ε
-- GroupBy_opt → GroupBy_opt | ε
-- Having_opt → Having_opt | ε
-- OrderBy_opt → OrderBy_opt | ε
+- GroupBy_opt → GroupBy | ε
+- Having_opt → Having | ε
+- OrderBy_opt → OrderBy | ε
 - Function → COUNT_FUNC_OPEN Func_Inner COUNT_FUNC_CLOSE | MAX_FUNC_OPEN Func_Inner MAX_FUNC_CLOSE
-- Function_Inner → STRING_LITERAL | COLUMN_OPEN STRING_LITERAL COLUMN_CLOSE
+- Function_Inner → STRING_LITERAL | Column_Args
+- Column_Args → COLUMN_OPEN STRING_LITERAL COLUMN_CLOSE | COLUMN_OPEN STRING_LITERAL COLUMN_CLOSE Column_Args
 - Alias → ALIAS_OPEN LHS_OPEN Alias_Inner LHS_CLOSE RHS_OPEN STRING_LITERAL RHS_CLOSE ALIAS_CLOSE
 - Alias_Inner → STRING_LITERAL | Function
 - Where → WHERE_OPEN condition WHERE_CLOSE
-- Condition → Bracket | Comparison Condition Condition_Inner
-- Condition_Inner → Condition | ε
+- Condition → Bracket | Comparison | Logical_Expression
+- Logical_Expression → Comparison AND Condition | Comparison OR Condition
 - Bracket → BRACKET_OPEN Condition BRACKET_CLOSE
 - Comparison → EQ_OP_OPEN Comparison_Inner EQ_OP_CLOSE | GT_OP_OPEN Comparison_Inner GT_OP_CLOSE
 - Comparison_Inner → LHS_OPEN Ref_or_Value LHS_CLOSE RHS_OPEN Constant RHS_CLOSE
-- Ref_or_Value → Table Ref_Column | STRING_LITERAL | Function
+- Ref_or_Value → Table_Column_Ref | STRING_LITERAL | Function
+- Table_Column_Ref → REF_TABLE_OPEN STRING_LITERAL REF_TABLE_CLOSE REF_COL_OPEN STRING_LITERAL REF_COL_CLOSE
 - Ref_Column → REF_COL_OPEN STRING_LITERAL REF_COL_CLOSE
 - Constant → STRING_CONSTANT_OPEN STRING_LITERAL STRING_CONSTANT_CLOSE | INT_CONSTANT_OPEN INT_LITERAL INT_CONSTANT_CLOSE
 - Group_By → GROUP_BY_OPEN ColumnList GROUP_BY_CLOSE
@@ -265,7 +267,7 @@ Context Free Grammar for all the tokens:
 - Order_By_Inner → ASC_OPEN Ref_Column ASC_CLOSE | DESC_OPEN Ref_Column DESC_CLOSE
 
 
-Parser output for test1.xml:
+Sample Parser output for test1.xml:
 ```
 Successfully parsed. AST structure:
 Query:
@@ -317,6 +319,26 @@ Query:
   Order By:
     Column: class
     Direction: asc
+```
+- test7.xml - syntax error as doesn't have the referenced table for the referenced column
+```
+Error parsing file: Expected either:
+1. Table and column reference (<ref_table>...<ref_col>)
+2. String literal
+3. Function call (count_func or max_func)
+Got TokenType.REF_COL_OPEN instead
+```
+- test8.xml - syntax error - from clause should have `<table>..</table>` within them
+```
+Error parsing file: Table must be wrapped in <table> tags
+```
+- test9.xml - syntax error - doesn't have an argument for count_func
+```
+Error parsing file: Expected at least one function argument
+```
+- test10.xml - syntax error - has 2 string literals for rhs instead of 1 i.e. "num_of_cars""num_of_cars" instead of "num_of_cars"
+```
+Error parsing file: Unclosed alias RHS
 ```
 
 ## Execution 

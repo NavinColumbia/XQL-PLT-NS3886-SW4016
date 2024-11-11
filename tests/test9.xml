@@ -1,33 +1,10 @@
 <query>
     <select>
         <column>
-            "names"
-        </column>
-        <column>
-            <alias>
-                <lhs>
-                    <count_func>"cars"</count_func>
-                </lhs>
-                <rhs>"num_of_cars"</rhs>
-            </alias>
+            <count_func></count_func>
         </column>
     </select>
     <from>
-        <table>"veichle"</table>
+        <table>"users"</table>
     </from>
-    <where>
-        <eq_op>
-            <lhs>
-               <ref_col> "items"</ref_col>
-            </lhs>
-            <rhs>
-                <string_constant>"names"</string_constant>
-            </rhs>
-        </eq_op>
-    </where>
-    <group_by>
-        <column>
-            "names"
-        </column>
-    </group_by>
 </query>

@@ -265,6 +265,10 @@ class Parser:
             raise SyntaxError("Expected FROM clause")
             
         tables = []
+        # First token after FROM_OPEN must be TABLE_OPEN
+        if self.peek().type == TokenType.STRING_LITERAL:
+            raise SyntaxError("Table must be wrapped in <table> tags")
+        
         while self.peek().type == TokenType.TABLE_OPEN:
             self.consume()
             if self.peek().type != TokenType.STRING_LITERAL:
@@ -334,17 +338,18 @@ class Parser:
 
     def parse_ref_or_value(self) -> Union[str, TableColumnRef, FunctionNode]:
         if self.peek().type == TokenType.REF_TABLE_OPEN:
+            # Parse table.column reference
             self.consume()
             if self.peek().type != TokenType.STRING_LITERAL:
-                raise SyntaxError(f"Expected table name, got {self.peek().type}")
+                raise SyntaxError(f"Expected table name in <ref_table> tag")
             table = self.consume().value
             if not self.match(TokenType.REF_TABLE_CLOSE):
                 raise SyntaxError("Unclosed table reference")
                 
             if not self.match(TokenType.REF_COL_OPEN):
-                raise SyntaxError("Expected column reference")
+                raise SyntaxError("Expected <ref_col> after table reference")
             if self.peek().type != TokenType.STRING_LITERAL:
-                raise SyntaxError("Expected column name")
+                raise SyntaxError("Expected column name in <ref_col> tag")
             column = self.consume().value
             if not self.match(TokenType.REF_COL_CLOSE):
                 raise SyntaxError("Unclosed column reference")
@@ -356,7 +361,12 @@ class Parser:
         elif self.peek().type in [TokenType.COUNT_FUNC_OPEN, TokenType.MAX_FUNC_OPEN]:
             return self.parse_function()
         else:
-            raise SyntaxError("Expected reference or value")
+            raise SyntaxError(f"Expected either:\n" +
+                            "1. Table and column reference (<ref_table>...<ref_col>)\n" +
+                            "2. String literal\n" +
+                            "3. Function call (count_func or max_func)\n" +
+                            f"Got {self.peek().type} instead")
+    
     def parse_constant(self) -> Union[str, int]:
         if self.peek().type == TokenType.STRING_CONSTANT_OPEN:
             self.consume()

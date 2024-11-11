@@ -1,0 +1,5 @@
+Error parsing file: Expected either:
+1. Table and column reference (<ref_table>...<ref_col>)
+2. String literal
+3. Function call (count_func or max_func)
+Got TokenType.REF_COL_OPEN instead
