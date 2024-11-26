@@ -3,6 +3,154 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 from enum import Enum
 
+class CodeGenerator:
+    def __init__(self, ast):
+        self.ast = ast
+        self.sql = ""
+
+    def generate(self):
+        self.sql = self.process_query(self.ast)
+        return self.sql
+
+    def process_query(self, node):
+        query_parts = []
+
+        select_clause = self.process_select(node.select)
+        query_parts.append(select_clause)
+
+        from_clause = self.process_from(node.from_)
+        query_parts.append(from_clause)
+
+        if node.where:
+            where_clause = self.process_where(node.where)
+            query_parts.append(where_clause)
+
+        if node.group_by:
+            group_by_clause = self.process_group_by(node.group_by)
+            query_parts.append(group_by_clause)
+
+        if node.having:
+            having_clause = self.process_having(node.having)
+            query_parts.append(having_clause)
+
+        if node.order_by:
+            order_by_clause = self.process_order_by(node.order_by)
+            query_parts.append(order_by_clause)
+
+        return " ".join(query_parts)
+
+    def process_select(self, node):
+        columns = []
+        for col in node.columns:
+            columns.append(self.process_column(col))
+        return "SELECT " + ", ".join(columns)
+
+    def process_column(self, node):
+        if isinstance(node.value, str):
+            return node.value
+        elif isinstance(node.value, FunctionNode):
+            func = self.process_function(node.value)
+            return func
+        elif isinstance(node.value, AliasNode):
+            expr = self.process_alias(node.value)
+            return expr
+        else:
+            raise CodeGenError("Unknown column node")
+
+    def process_function(self, node):
+        args = ", ".join(node.arguments)
+        return f"{node.name.upper()}({args})"
+
+    def process_alias(self, node):
+            if isinstance(node.expression, FunctionNode):
+                expr = self.process_function(node.expression)
+            else:
+                expr = node.expression
+            
+            alias = node.alias.strip('"').strip("'")
+            if ' ' in alias:
+                raise CodeGenError(f"Invalid alias name '{alias}'. Alias names cannot contain spaces.", node)
+                
+            return f"{expr} AS {alias}"
+
+    def process_from(self, node):
+        tables = ", ".join(node.tables)
+        return "FROM " + tables
+
+    def process_where(self, node):
+        condition = self.process_condition(node.condition)
+        return "WHERE " + condition
+
+    def process_condition(self, node):
+        if isinstance(node, ComparisonNode):
+            left = self.process_operand(node.left)
+            right = self.process_operand(node.right, wrap_strings=True)
+            operator = self.get_operator(node.operator)
+            return f"{left} {operator} {right}"
+        elif isinstance(node, LogicalNode):
+            left = self.process_condition(node.left)
+            right = self.process_condition(node.right)
+            operator = node.operator.upper()
+            return f"({left} {operator} {right})"
+        elif isinstance(node, BracketNode):
+            expr = self.process_condition(node.expression)
+            return f"({expr})"
+        else:
+            raise CodeGenError("Unknown condition node")
+
+    def process_operand(self, operand, wrap_strings=False):
+        if isinstance(operand, TableColumnRef):
+            return f"{operand.table}.{operand.column}"
+        elif isinstance(operand, FunctionNode):
+            return self.process_function(operand)
+        elif isinstance(operand, str):
+            # Remove any existing quotes first
+            cleaned = operand.strip('"').strip("'")
+            # Only wrap in single quotes if it's meant to be a string constant
+            return f"'{cleaned}'" if wrap_strings else cleaned
+        elif isinstance(operand, int):
+            return str(operand)
+        else:
+            raise CodeGenError("Unknown operand type")
+
+    def get_operator(self, operator):
+        operators = {
+            "eq": "=",
+            "gt": ">",
+            "lt": "<",
+            "ge": ">=",
+            "le": "<=",
+            "ne": "!=",
+        }
+        return operators.get(operator, operator)
+
+    def process_group_by(self, node):
+        columns = ", ".join(node.columns)
+        return "GROUP BY " + columns
+
+    def process_having(self, node):
+        condition = self.process_condition(node.condition)
+        return "HAVING " + condition
+
+    def process_order_by(self, node):
+        return f"ORDER BY {node.column} {node.direction.upper()}"
+
+
+def generate_sql_from_ast(ast):
+    generator = CodeGenerator(ast)
+    sql_query = generator.generate()
+    return sql_query
+
+
+class CodeGenError(Exception):
+    """Exception raised during code generation"""
+    def __init__(self, message, node=None):
+        self.node = node
+        self.message = message
+        if node:
+            self.message += f" (Node type: {type(node).__name__})"
+        super().__init__(self.message)
+
 @dataclass
 class QueryNode:
     select: 'SelectNode'
@@ -616,28 +764,44 @@ def process_lexer_output():
             except Exception as e:
                 print(f"Error parsing {filename}: {str(e)}")
 """
-def process_files(input_dir: str = "./lexer_output", output_dir: str = "./parser_output"):
+def process_files(input_dir: str = "./lexer_output", output_dir: str = "./parser_output", codegen_dir: str = "./codegen_output"):
     if not os.path.exists(input_dir):
         print(f"Error: Input directory {input_dir} does not exist")
         return
         
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(codegen_dir, exist_ok=True)
     
     for filename in os.listdir(input_dir):
         if filename.endswith(".txt"):
             input_path = os.path.join(input_dir, filename)
             output_path = os.path.join(output_dir, f"parsed_{filename}")
+
+            codegen_path = os.path.join(codegen_dir, f"parsed_{filename}")
             
             print(f"\nProcessing {filename}:")
             try:
                 ast = parse_tokens_file(input_path)
                 print("Successfully parsed. Check output file for AST structure.")
-                
                 # Write AST to output file
                 with open(output_path, 'w') as f:
                     f.write("Successfully parsed. AST structure:\n")
                     write_ast_to_file(ast, f)
+                
+               
+                try:
+                    print("Starting SQL code generation...")
+                    val = generate_sql_from_ast(ast)
+                    print("Generated SQL:", val)
+                    with open(codegen_path, 'w') as f:
+                        f.write(val)
+                    print("Code generation successful")
+                except CodeGenError as e:
+                    print(f"Code generation failed: {e.message}")
+                    with open(codegen_path, 'w') as f:
+                        f.write(f"Code Generation Error: {e.message}\n")
+                    continue
                     
             except Exception as e:
                 print(f"Error parsing {filename}: {str(e)}")

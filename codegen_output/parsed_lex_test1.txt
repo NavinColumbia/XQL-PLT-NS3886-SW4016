@@ -1,0 +1,1 @@
+SELECT class, COUNT(*), MAX(stats) AS max_stats FROM characters, games WHERE (games.game = 'genshin' AND ((games.origin = 'USA' OR games.origin = 'Japan'))) GROUP BY class HAVING COUNT(*) > 3 ORDER BY class ASC
