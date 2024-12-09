@@ -47,6 +47,8 @@ class CodeGenerator:
 
     def process_column(self, node):
         if isinstance(node.value, str):
+            if ' ' in node.value:
+                raise CodeGenError(f"Invalid column name '{node.value}'. Column names cannot contain spaces.", node)
             return node.value
         elif isinstance(node.value, FunctionNode):
             func = self.process_function(node.value)
@@ -776,9 +778,13 @@ def process_files(input_dir: str = "./lexer_output", output_dir: str = "./parser
     for filename in os.listdir(input_dir):
         if filename.endswith(".txt"):
             input_path = os.path.join(input_dir, filename)
+
+            # extract original filename
+            filename = filename.split('_')[1]
+
             output_path = os.path.join(output_dir, f"parsed_{filename}")
 
-            codegen_path = os.path.join(codegen_dir, f"parsed_{filename}")
+            codegen_path = os.path.join(codegen_dir, f"code_gen_{filename}")
             
             print(f"\nProcessing {filename}:")
             try:

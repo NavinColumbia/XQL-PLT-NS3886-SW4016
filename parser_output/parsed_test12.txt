@@ -1,0 +1,20 @@
+Successfully parsed. AST structure:
+Query:
+  Select:
+    Column: department id
+    Column:
+      Alias:
+        Expression:
+          Function: count
+            Parameters:
+              Column: employee_id
+        As: employee_count
+  From:
+    Table: employees
+  Where:
+    Comparison (eq):
+      Left:
+        Reference: employees.hire_date
+      Right: '2020-01-01'
+  Group By:
+    Column: department_id

@@ -1,0 +1,32 @@
+<query>
+    <select>
+        <column>
+            "department_id"
+        </column>
+        <column>
+            <alias>
+                <lhs>
+                    <count_func>"employee_id"</count_func>
+                </lhs>
+                <rhs>"employee count"</rhs>
+            </alias>
+        </column>
+    </select>
+    <from>
+        <table>"employees"</table>
+    </from>
+    <where>
+        <eq_op>
+            <lhs>
+                <ref_table>"employees"</ref_table>
+                <ref_col>"hire_date"</ref_col>
+            </lhs>
+            <rhs>
+                <string_constant>"'2020-01-01'"</string_constant>
+            </rhs>
+        </eq_op>
+    </where>
+    <group_by>
+        <column>"department_id"</column>
+    </group_by>
+</query>
