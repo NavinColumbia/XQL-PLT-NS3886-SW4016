@@ -11,7 +11,7 @@
 <COUNT_FUNC_CLOSE, </count_func>>
 <LHS_CLOSE, </lhs>>
 <RHS_OPEN, <rhs>>
-<STRING_LITERAL, employee count>
+<STRING_LITERAL, 'employee count'>
 <RHS_CLOSE, </rhs>>
 <ALIAS_CLOSE, </alias>>
 <COLUMN_CLOSE, </column>>

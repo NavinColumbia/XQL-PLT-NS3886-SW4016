@@ -1,0 +1,28 @@
+
+<query>
+   <select>
+      <column>"name"</column>
+   </select>
+   <from>
+      <table>"characters"</table>
+   </from>
+   <where>
+      <gt_op>
+         <lhs>
+            <ref_table>"characters"</ref_table>
+            <ref_col>"attack"</ref_col>
+         </lhs>
+         <rhs>
+            <int_constant> 95 </int_constant>
+         </rhs>
+      </gt_op>
+   </where>
+   <group_by>
+      <column>"class"</column>
+   </group_by>
+   <order_by>
+      <asc>
+         <ref_col>"class"</ref_col>
+      </asc>
+   </order_by>
+</query>

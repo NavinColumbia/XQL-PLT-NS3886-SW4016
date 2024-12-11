@@ -1,0 +1,22 @@
+Successfully parsed. AST structure:
+Query:
+  Select:
+    Column:
+      Function: max
+        Parameters:
+          Column: age
+  From:
+    Table: characters
+    Table: games
+  Where:
+    Logical and:
+      Left:
+        Comparison (eq):
+          Left:
+            Reference: characters.class
+          Right: 'pyro'
+      Right:
+        Comparison (eq):
+          Left:
+            Reference: games.release
+          Right: 2020-Inazuma-2.5

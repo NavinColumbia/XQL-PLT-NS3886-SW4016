@@ -1,0 +1,40 @@
+
+<query>
+   <select>
+   <column>
+      <max_func>"age"</max_func>
+    </column>
+   </select>
+   <from>
+      <table>"characters"</table>
+      <table>"games"</table>
+   </from>
+   <where>
+
+  
+      <eq_op>
+         <lhs>
+            <ref_table>"characters"</ref_table>
+            <ref_col>"class"</ref_col>
+         </lhs>
+         <rhs>
+           <string_constant>"'pyro'"</string_constant>
+         </rhs>
+      </eq_op>
+      <and/>
+      <eq_op>
+         <lhs>
+            <ref_table>"games"</ref_table>
+            <ref_col>"release"</ref_col>
+         </lhs>
+         <rhs>
+           <string_constant>"2020-Inazuma-2.5"</string_constant>
+         </rhs>
+      </eq_op>
+    </where>
+
+
+     
+
+   
+</query>

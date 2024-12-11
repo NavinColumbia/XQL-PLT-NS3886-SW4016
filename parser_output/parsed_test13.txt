@@ -1,0 +1,16 @@
+Successfully parsed. AST structure:
+Query:
+  Select:
+    Column: name
+  From:
+    Table: characters
+  Where:
+    Comparison (gt):
+      Left:
+        Reference: characters.attack
+      Right: 95
+  Group By:
+    Column: class
+  Order By:
+    Column: class
+    Direction: asc

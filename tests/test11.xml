@@ -8,7 +8,7 @@
                 <lhs>
                     <count_func>"employee_id"</count_func>
                 </lhs>
-                <rhs>"employee count"</rhs>
+                <rhs>"'employee count'"</rhs>
             </alias>
         </column>
     </select>

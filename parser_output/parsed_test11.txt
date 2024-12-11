@@ -8,7 +8,7 @@ Query:
           Function: count
             Parameters:
               Column: employee_id
-        As: employee count
+        As: 'employee count'
   From:
     Table: employees
   Where:

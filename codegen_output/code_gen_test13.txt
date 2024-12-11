@@ -1,0 +1,1 @@
+SELECT name FROM characters WHERE characters.attack > 95 GROUP BY class ORDER BY class ASC

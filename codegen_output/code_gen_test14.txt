@@ -1,0 +1,1 @@
+SELECT MAX(age) FROM characters, games WHERE (characters.class = 'pyro' AND games.release = '2020-Inazuma-2.5')
